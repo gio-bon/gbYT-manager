@@ -133,11 +133,24 @@ function addMusic(link, amount) {
                 playNext(); // Inicia a reprodução da música adicionada à fila
             }
         }
+        checkAndHideQueueTable();
     } else {
         alert('Link do YouTube inválido');
     }
 }
 
+window.addEventListener('load', () => {
+    checkAndHideQueueTable();
+});
+
+function checkAndHideQueueTable() {
+    const queueTable = document.getElementById('queueTable');
+    if (queue.length === 0) {
+        queueTable.style.display = 'none';
+    } else {
+        queueTable.style.display = 'table'; // ou 'block' dependendo do seu layout CSS
+    }
+}
 
 
 function getYouTubeVideoId(url) {
@@ -197,8 +210,9 @@ function renderQueue() {
 
         // Adiciona a linha à tabela
         queueTable.appendChild(row);
-    });
 
+    });
+    checkAndHideQueueTable();
     atualizaGranaTotal();
 }
 
