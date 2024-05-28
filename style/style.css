@@ -14,3 +14,28 @@ body {
     border: 1px solid #ddd;
     margin-bottom: 5px;
 }
+
+#musicForm{
+    margin-top: 40px;
+    margin-right: 40px;
+}
+
+.statistics{
+    display: flex;
+    gap: 50px;
+}
+
+#granaTotal{
+    font-weight: bold;
+    font-size: larger;
+    font-family:monospace;
+}
+
+.title{
+    display: flex;
+
+    align-items: center;
+    font-size: 25px;
+    font-weight: bold;
+    font-family:monospace;
+}

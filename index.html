@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en" data-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,18 +8,61 @@
     <link rel="stylesheet" href="style/style.css">
     <script src="https://www.youtube.com/iframe_api"></script>
     <script type="module" src="scripts/main.js" defer></script>
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.jsdelivr.net/npm/minstyle.io@2.0.2/dist/css/minstyle.io.min.css">
 </head>
+
 <body>
-    <h1>Gestor e Tocador de Músicas</h1>
-    <form id="musicForm">
-        <input type="text" id="youtubeLink" placeholder="Link do YouTube" required>
-        <input type="text" id="amount" placeholder="Valor" required>
-        <button type="submit">Adicionar</button>
-    </form>
-    <div>Total: R$ <span id="granaTotal"></span></div>
-    <button id="resetButton">Resetar Dados</button>
-    <div id="msgErro"></div>
-    <div id="player"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm title">
+                <h1>Music Manager</h1>
+            </div>
+
+            <div class="col-sm-5">
+                <form id="musicForm">
+                    <div class="ms-form-group">
+                        <input type="text" id="youtubeLink" placeholder="Link do YouTube https://www..." required>
+                    </div>
+                    <div class="ms-form-group">
+                        <input type="text" id="amount" placeholder="Valor 100,20" required>
+
+                    </div>
+                    <button class="ms-btn ms-secondary" type="submit">Adicionar</button>
+                </form>
+            </div>
+            <div class="col-sm-5 statistics">
+                <button class="ms-btn ms-primary" id="resetButton">Resetar Dados</button>
+                <div>Total: R$ <span id="granaTotal"></span></div>
+            </div>
+            <div class="col-sm-12">
+                <div id="player"></div>
+                <div id="msgErro"></div>
+            </div>
+            <div class="col-sm-12">
+                <table class="ms-table">
+                    <thead>
+                        <tr>
+                            <th>Link</th>
+                            <th>Ordem</th>
+                            <th>Valor</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
     <div id="queue"></div>
+
+
+    <footer class="ms-footer">
+        <div class="container">
+            <p><b>Criado por <a href="https://gio-bon.github.io/" target="_blank">Giovani Bontempo</a></b> &copy; </p>
+        </div>
+    </footer>
 </body>
+
 </html>

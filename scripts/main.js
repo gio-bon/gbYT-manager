@@ -58,9 +58,9 @@ botaoReset.addEventListener ('click', resetData);
 
 window.onYouTubeIframeAPIReady = function() {
     player = new YT.Player('player', {
-        height: '390',
-        width: '640',
-        videoId: '4FM7XeaSO0M', // ID do vídeo inicial (pode ser vazio)
+        height: '600',
+        width: '1280',
+        videoId: 'XoXUqkod4V8', // ID do vídeo inicial (pode ser vazio)
         events: {
             'onReady': onPlayerReady,
             'onStateChange': onPlayerStateChange,
@@ -80,11 +80,8 @@ function onPlayerError(event) {
     } else {
         console.log('Não há mais músicas na fila.'); // Ou qualquer outra ação que você queira executar
     }
-    const link = document.createElement('a'); // Cria um elemento de âncora
-    link.href = `https://youtu.be/${currentVideoId}`; // Define o link para o vídeo
-    link.target = '_blank';
-    link.textContent = `Erro ao reproduzir o vídeo: ${currentVideoId}`; // Define o texto do link
-    divErro.appendChild(link); // Adiciona o link à divErro
+    let htmlErro = `<p>Erro ao reproduzir o vídeo:<a href="https://youtu.be/${currentVideoId}" target="_blank">https://youtu.be/${currentVideoId}</a></p>`;
+    divErro.innerHTML += htmlErro;
 }
 
 
@@ -118,15 +115,16 @@ function addMusic(link, amount) {
 
     if (videoId) {
         const wasQueueEmpty = queue.length === 0; // Verifica se a fila estava vazia antes de adicionar a música
-        queue.push({ videoId, amount });
-        queue.sort((a, b) => b.amount - a.amount);
-        saveQueue();
-        renderQueue();
         dataSession.total += amount;
         dataSession.ordem += 1;
+        const ordem = dataSession.ordem;
         console.log(dataSession.ordem);
         saveData(dataSession);
         atualizaGranaTotal();
+        queue.push({ videoId, amount, ordem });
+        queue.sort((a, b) => b.amount - a.amount);
+        saveQueue();
+        renderQueue();
 
         // Se a fila estava vazia antes de adicionar a música
         if (wasQueueEmpty) {
@@ -158,28 +156,52 @@ function playNext() {
 }
 
 function renderQueue() {
-    const queueDiv = document.getElementById('queue');
-    queueDiv.innerHTML = '';
-    queue.forEach((item, index) => {
-        const div = document.createElement('div');
-        div.className = 'queue-item';
+    const queueTable = document.querySelector('.ms-table tbody');
+    queueTable.innerHTML = ''; // Limpa o conteúdo existente da tabela
 
-        // Cria um botão de exclusão para o item
+    queue.forEach((item, index) => {
+        const row = document.createElement('tr'); // Cria uma nova linha
+
+        // Cria células de dados para cada propriedade do item
+        const linkCell = document.createElement('td');
+        /* linkCell.textContent = item.videoId; */
+        const link = document.createElement('a');
+        link.href = `https://www.youtube.com/watch?v=${item.videoId}`; // Ajuste a URL conforme necessário
+        link.textContent = item.videoId;
+        link.target = '_blank'
+        linkCell.appendChild(link);
+
+        const ordemCell = document.createElement('td');
+        ordemCell.textContent = item.ordem;
+
+        const valorCell = document.createElement('td');
+        valorCell.textContent = `R$ ${item.amount.toFixed(2) }`.replace('.', ',');
+
+        // Adiciona as células à linha
+        row.appendChild(linkCell);
+        row.appendChild(ordemCell);
+        row.appendChild(valorCell);
+
+        // Cria uma célula para o botão de exclusão
+        const deleteCell = document.createElement('td');
         const deleteButton = document.createElement('button');
+        deleteButton.classList.add('ms-btn', 'ms-primary');
         deleteButton.textContent = 'Excluir';
         deleteButton.addEventListener('click', function() {
             removeMusic(index); // Chama a função para remover a música ao clicar no botão
         });
+        deleteCell.appendChild(deleteButton);
 
-        
-        div.innerHTML += `Link: ${item.videoId}, Ordem: ${item.ordem}, Valor: ${item.amount}`;
-// Adiciona o botão de exclusão e os detalhes da música ao item da lista
-        div.appendChild(deleteButton);
-        // Adiciona o item à lista
-        atualizaGranaTotal();
-        queueDiv.appendChild(div);
+        // Adiciona a célula de exclusão à linha
+        row.appendChild(deleteCell);
+
+        // Adiciona a linha à tabela
+        queueTable.appendChild(row);
     });
+
+    atualizaGranaTotal();
 }
+
 
 function removeMusic(index) {
     if (index >= 0 && index < queue.length) {
