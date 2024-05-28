@@ -1,0 +1,16 @@
+body {
+    font-family: Arial, sans-serif;
+}
+#player {
+    margin-top: 20px;
+}
+#queue {
+    margin-top: 20px;
+}
+.queue-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 5px;
+}

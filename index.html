@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor e Tocador de Músicas</title>
+    <link rel="stylesheet" href="style/style.css">
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script type="module" src="scripts/main.js" defer></script>
+</head>
+<body>
+    <h1>Gestor e Tocador de Músicas</h1>
+    <form id="musicForm">
+        <input type="text" id="youtubeLink" placeholder="Link do YouTube" required>
+        <input type="text" id="amount" placeholder="Valor" required>
+        <button type="submit">Adicionar</button>
+    </form>
+    <div>Total: R$ <span id="granaTotal"></span></div>
+    <button id="resetButton">Resetar Dados</button>
+    <div id="msgErro"></div>
+    <div id="player"></div>
+    <div id="queue"></div>
+</body>
+</html>
