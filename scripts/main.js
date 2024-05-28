@@ -185,14 +185,15 @@ function renderQueue() {
         linkCell.appendChild(link);
 
         const ordemCell = document.createElement('td');
+        ordemCell.className = 'ms-text-light';
         ordemCell.textContent = item.ordem;
 
         const valorCell = document.createElement('td');
         valorCell.textContent = `R$ ${item.amount.toFixed(2) }`.replace('.', ',');
 
         // Adiciona as células à linha
-        row.appendChild(linkCell);
         row.appendChild(ordemCell);
+        row.appendChild(linkCell);
         row.appendChild(valorCell);
 
         // Cria uma célula para o botão de exclusão
