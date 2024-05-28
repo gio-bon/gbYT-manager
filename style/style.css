@@ -1,3 +1,5 @@
+@import "https://www.nerdfonts.com/assets/css/webfont.css";
+
 body {
     font-family: Arial, sans-serif;
 }
@@ -16,7 +18,7 @@ body {
 }
 
 #musicForm{
-    margin-top: 40px;
+    margin-top: 80px;
     margin-right: 40px;
 }
 
@@ -25,9 +27,9 @@ body {
     gap: 50px;
 }
 
-#granaTotal{
+.granaTotalDiv{
     font-weight: bold;
-    font-size: larger;
+    font-size: 32px;
     font-family:monospace;
 }
 
