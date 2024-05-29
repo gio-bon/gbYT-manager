@@ -1,25 +1,22 @@
-//https://developers.google.com/youtube/iframe_api_reference?hl=pt
-
 let player;
 const queue = [];
 const dataSessionKey = 'dataSession';
-let currentVideoId; // Variável global para armazenar o ID do vídeo atual
-const divErro = document.getElementById('msgErro'); // Variável global para armazenar o elemento de erro
-
+let currentVideoId;
+const divErro = document.getElementById('msgErro');
 const granaTotal = document.getElementById('granaTotal');
 
+//Atualiza o valor total de dinheiro exibido na interface.
 function atualizaGranaTotal() {
     const exibeGranaTotal = dataSession.total.toFixed(2).replace('.', ',');
     granaTotal.textContent = exibeGranaTotal;
 }
 
-
-// Função para salvar dados no localStorage
+//Salva os dados no localStorage.
 function saveData(obj) {
     localStorage.setItem(dataSessionKey, JSON.stringify(obj));
 }
 
-// Função para carregar dados do localStorage
+//Carrega os dados do localStorage.
 function loadData() {
     const savedData = localStorage.getItem(dataSessionKey);
     if (savedData) {
@@ -29,16 +26,9 @@ function loadData() {
     }
 }
 
-/* O objeto precisa de return JSON.parse(savedData); para ser recuperado corretamente porque o 
-localStorage só pode armazenar dados como strings. Quando você salva um objeto no localStorage, 
-ele precisa ser convertido em uma string JSON. Da mesma forma, quando você recupera esse dado, ele 
-vem como uma string JSON e precisa ser convertido de volta para um objeto JavaScript para ser utilizado 
-no seu código. */
-
-// Carrega ou inicializa os dados de sessão
 let dataSession = loadData();
 
-// Função para resetar os dados do objeto
+//Reseta os dados da sessão, a fila de músicas, e atualiza a interface.
 function resetData() {
     dataSession = { total: 0.0, ordem: 0};
     saveData(dataSession);
@@ -56,55 +46,54 @@ function resetData() {
 const botaoReset = document.getElementById('resetButton');
 botaoReset.addEventListener ('click', resetData);
 
+//Inicializa o player do YouTube.
 window.onYouTubeIframeAPIReady = function() {
     player = new YT.Player('player', {
         height: '600',
         width: '1280',
-        videoId: '-5tHiZACxbI', // ID do vídeo inicial (pode ser vazio)
+        videoId: '4FM7XeaSO0M',
         events: {
             'onReady': onPlayerReady,
             'onStateChange': onPlayerStateChange,
-            'onError': onPlayerError // Adiciona manipulador de evento para lidar com erros
+            'onError': onPlayerError
         }
     });
 }
 
+//Manipulador de erro do player do YouTube.
 function onPlayerError(event) {
-    // Se ocorrer um erro durante a reprodução do vídeo
     currentVideoId = player.getVideoData().video_id;
     console.error('Erro ao reproduzir o vídeo:', event.data);
 
-    // Verifica se há músicas restantes na fila
     if (queue.length > 0) {
-        playNext(); // Pula para a próxima música na fila
+        playNext();
     } else {
-        console.log('Não há mais músicas na fila.'); // Ou qualquer outra ação que você queira executar
+        console.log('Não há mais músicas na fila.');
     }
     let htmlErro = `<p>Erro ao reproduzir o vídeo:<a href="https://youtu.be/${currentVideoId}" target="_blank">https://youtu.be/${currentVideoId}</a></p>`;
     divErro.innerHTML += htmlErro;
 }
 
-
+//Manipulador de evento quando o player está pronto.
 function onPlayerReady(event) {
-    // O player está pronto, podemos iniciar a reprodução se necessário
     playNext();
 }
 
+//Manipulador de evento quando o estado do player muda.
 function onPlayerStateChange(event) {
     if (event.data == YT.PlayerState.ENDED) {
         playNext();
     }
 }
 
-// Verifica se o player do YouTube está sendo exibido corretamente após um atraso
+//Reinicia o player e recarrega a interface, caso demore pra carregar inicialmente
 setTimeout(function() {
-    // Se o player não estiver definido ou não estiver sendo exibido corretamente
     if (!player || !player.getIframe()) {
-        // Recarrega a página para tentar exibir o player novamente
         location.reload();
     }
 }, 3000);
 
+//Adiciona uma música à fila, parâmetros: link do YouTube e valor da música
 function addMusic(link, amount) {
     const videoId = getYouTubeVideoId(link);
     amount = amount.toString();
@@ -113,8 +102,8 @@ function addMusic(link, amount) {
     }
     amount = parseFloat(amount);
 
-    if (videoId) {
-        const wasQueueEmpty = queue.length === 0; // Verifica se a fila estava vazia antes de adicionar a música
+    if (videoId) { //verifica se o link do YouTube é válido
+        const wasQueueEmpty = queue.length === 0;
         dataSession.total += amount;
         dataSession.ordem += 1;
         const ordem = dataSession.ordem;
@@ -126,11 +115,9 @@ function addMusic(link, amount) {
         saveQueue();
         renderQueue();
 
-        // Se a fila estava vazia antes de adicionar a música
         if (wasQueueEmpty) {
-            // Verifica se o player está no estado de "vazio" (não tocando)
             if (player.getPlayerState() === YT.PlayerState.ENDED || player.getPlayerState() === YT.PlayerState.UNSTARTED) {
-                playNext(); // Inicia a reprodução da música adicionada à fila
+                playNext();
             }
         }
         checkAndHideQueueTable();
@@ -139,26 +126,29 @@ function addMusic(link, amount) {
     }
 }
 
+// Carrega a lista de músicas da fila quando a página está carregada, se houver algo na lista
 window.addEventListener('load', () => {
     checkAndHideQueueTable();
 });
 
+//Verifica e esconde a tabela de fila se estiver vazia e mostra se tiver algo
 function checkAndHideQueueTable() {
     const queueTable = document.getElementById('queueTable');
     if (queue.length === 0) {
         queueTable.style.display = 'none';
     } else {
-        queueTable.style.display = 'table'; // ou 'block' dependendo do seu layout CSS
+        queueTable.style.display = 'table';
     }
 }
 
-
+//Extrai o ID do vídeo do YouTube a partir da URL.
 function getYouTubeVideoId(url) {
-    const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/; // regex para extrair o ID do YouTube
     const match = url.match(regex);
     return match ? match[1] : null;
 }
 
+//Reproduz a próxima música na fila.
 function playNext() {
     if (queue.length > 0) {
         const next = queue.shift();
@@ -168,18 +158,18 @@ function playNext() {
     }
 }
 
+//Renderiza a fila de músicas na interface.
 function renderQueue() {
     const queueTable = document.querySelector('.ms-table tbody');
-    queueTable.innerHTML = ''; // Limpa o conteúdo existente da tabela
+    queueTable.innerHTML = '';
 
+    //renderiza cada linha da tabela com dados de queue
     queue.forEach((item, index) => {
-        const row = document.createElement('tr'); // Cria uma nova linha
+        const row = document.createElement('tr');
 
-        // Cria células de dados para cada propriedade do item
         const linkCell = document.createElement('td');
-        /* linkCell.textContent = item.videoId; */
         const link = document.createElement('a');
-        link.href = `https://www.youtube.com/watch?v=${item.videoId}`; // Ajuste a URL conforme necessário
+        link.href = `https://www.youtube.com/watch?v=${item.videoId}`;
         link.textContent = item.videoId;
         link.target = '_blank'
         linkCell.appendChild(link);
@@ -191,25 +181,21 @@ function renderQueue() {
         const valorCell = document.createElement('td');
         valorCell.textContent = `R$ ${item.amount.toFixed(2) }`.replace('.', ',');
 
-        // Adiciona as células à linha
         row.appendChild(ordemCell);
         row.appendChild(linkCell);
         row.appendChild(valorCell);
 
-        // Cria uma célula para o botão de exclusão
         const deleteCell = document.createElement('td');
         const deleteButton = document.createElement('button');
         deleteButton.classList.add('ms-btn', 'ms-primary');
         deleteButton.textContent = 'Excluir';
         deleteButton.addEventListener('click', function() {
-            removeMusic(index); // Chama a função para remover a música ao clicar no botão
+            removeMusic(index);
         });
         deleteCell.appendChild(deleteButton);
 
-        // Adiciona a célula de exclusão à linha
         row.appendChild(deleteCell);
 
-        // Adiciona a linha à tabela
         queueTable.appendChild(row);
 
     });
@@ -217,23 +203,24 @@ function renderQueue() {
     atualizaGranaTotal();
 }
 
-
+//Remove uma música da fila.
 function removeMusic(index) {
     if (index >= 0 && index < queue.length) {
-        const removedItem = queue.splice(index, 1)[0]; // Remove o item da fila
+        const removedItem = queue.splice(index, 1)[0];
         saveQueue();
-        renderQueue(); // Renderiza a fila atualizada
-        // Atualiza a sessão, removendo o valor da música excluída
+        renderQueue();
         dataSession.total -= removedItem.amount;
         atualizaGranaTotal();
         saveData(dataSession);
     }
 }
 
+//Salva a fila de músicas no localStorage.
 function saveQueue() {
     localStorage.setItem('musicQueue', JSON.stringify(queue));
 }
 
+//Carrega a fila de músicas do localStorage.
 function loadQueue() {
     const savedQueue = localStorage.getItem('musicQueue');
     if (savedQueue) {
@@ -242,13 +229,22 @@ function loadQueue() {
     }
 }
 
+
+// Adiciona um ouvinte de eventos para o formulário com o ID 'musicForm' que escuta o evento 'submit'
 document.getElementById('musicForm').addEventListener('submit', function(event) {
+    // Impede o comportamento padrão do formulário de recarregar a página ao ser enviado
     event.preventDefault();
+
     const link = document.getElementById('youtubeLink').value;
     const amount = parseFloat(document.getElementById('amount').value, 10);
+
+    // Chama a função 'addMusic' com o link e o valor obtidos
     addMusic(link, amount);
+
+    // Limpa os campos de entrada 'youtubeLink' e 'amount' após a submissão do formulário
     document.getElementById('youtubeLink').value = '';
     document.getElementById('amount').value = '';
 });
 
+// Define que a função 'loadQueue' será chamada quando a janela (página) terminar de carregar
 window.onload = loadQueue;
